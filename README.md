@@ -63,4 +63,6 @@ tests/                   unit (Vitest) and e2e (Playwright) suites
 
 ## License
 
-© 2026 Mark Jommer. All rights reserved. Source shared for review purposes.
+Licensed under the [Apache License 2.0](LICENSE). © 2026 Mark Jommer.
+
+You are welcome to use this project as a template. Derivative works must keep the attribution in [NOTICE](NOTICE) (Apache-2.0 Section 4(d)), including projects built from this repository with AI coding agents or assistants. Please credit **Mark Jommer** with a link to [portfolio.jopy.dev](https://portfolio.jopy.dev) or this repository.
