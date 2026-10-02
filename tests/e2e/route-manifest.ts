@@ -17,7 +17,7 @@ export const ROUTES: readonly RouteEntry[] = [
     expectedStatus: 200,
     roles: ["Visitor"],
     deniedRoles: [],
-    states: ["default", "js-disabled", "reduced-motion", "mobile-375", "tablet-768", "desktop-1280"],
+    states: ["loading-screen", "default", "js-disabled", "reduced-motion", "mobile-375", "tablet-768", "desktop-1280"],
     criticality: "critical",
     evidence: "automated",
   },

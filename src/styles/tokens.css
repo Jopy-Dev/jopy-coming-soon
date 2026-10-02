@@ -29,6 +29,15 @@
   --duration-press: 140ms;
   --duration-rail: 350ms;
   --duration-card-fade: 600ms;
+  --ease-in: cubic-bezier(.5, 0, .75, 0);
+  --duration-loader-fade: 600ms;
+  --duration-loader-failsafe: 6000ms;
+
+  --size-loader-logo: clamp(64px, 9vmin, 96px);
+  --size-loader-bar-w: clamp(160px, 22vw, 220px);
+  --size-loader-bar-h: 4px;
+  --space-loader-logo-text: 32px;
+  --space-loader-text-bar: 16px;
 
   --dot-pitch: 22px;
   --dot-offset: 11px;
@@ -44,6 +53,7 @@
   --z-swarm: 1;
   --z-copy: 2;
   --z-chrome: 30;
+  --z-loader: 50;
 }
 
 @media (min-width: 640px) {

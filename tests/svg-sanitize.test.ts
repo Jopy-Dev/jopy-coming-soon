@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
-import { assertSafeSvg, sanitizeIconSvg, UnsafeSvgError } from "../vite-plugins/svg-sanitize";
+import { assertSafeSvg, sanitizeIconSvg, sanitizeLogoSvg, UnsafeSvgError } from "../vite-plugins/svg-sanitize";
 
 const icon = (name: string): string => readFileSync(resolve(import.meta.dirname, "../assets/icons", name), "utf8");
 
@@ -49,5 +49,29 @@ describe("REQ-006 sanitizer edge branches", () => {
 describe("REQ-022 favicon safety check", () => {
   it("accepts the supplied logo unmodified", () => {
     expect(() => assertSafeSvg(icon("Logo.svg"), "Logo.svg")).not.toThrow();
+  });
+});
+
+describe("REQ-022/REQ-023 logo sanitizer", () => {
+  it("rebuilds Logo.svg keeping its hex fills, aria-hidden, no size or stroke", () => {
+    const out = sanitizeLogoSvg(icon("Logo.svg"), "Logo.svg");
+    expect(out).toMatch(/^<svg viewBox="0 0 1095 1095" aria-hidden="true" focusable="false"><path fill="#03955C"/);
+    expect(out).toContain('fill="#07738B"');
+    expect(out).not.toMatch(/width=|height=|stroke|currentColor/);
+  });
+});
+
+describe("REQ-022/REQ-023 logo sanitizer fill allowlist", () => {
+  it.each([
+    ['<svg viewBox="0 0 1 1"><path fill="red" d="M0 0"/></svg>', "named color"],
+    ['<svg viewBox="0 0 1 1"><path fill="#12345" d="M0 0"/></svg>', "5-digit hex"],
+    ['<svg viewBox="0 0 1 1"><path fill="#fff" x="" d="M0 0"/><path d="M1 1"/></svg>', "missing fill"],
+    ['<svg viewBox="0 0 1 1"><path fill="#ffffff;stroke:red" d="M0 0"/></svg>', "trailing payload"],
+  ])("rejects %s (%s)", (svg) => {
+    expect(() => sanitizeLogoSvg(svg, "fixture")).toThrow(UnsafeSvgError);
+  });
+
+  it("accepts 3-digit hex", () => {
+    expect(sanitizeLogoSvg('<svg viewBox="0 0 1 1"><path fill="#0a0" d="M0 0"/></svg>', "f")).toContain('fill="#0a0"');
   });
 });

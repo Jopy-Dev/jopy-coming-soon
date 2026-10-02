@@ -8,11 +8,12 @@ Portfolio: **[portfolio.jopy.dev](https://portfolio.jopy.dev)**
 
 ## Highlights
 
+- **Brand loading screen**: logo, "loading..." decoding into "welcome", and a progress bar that only completes once the page and fonts are ready, then a fade into the site. The page renders underneath, so it never delays Largest Contentful Paint; skipped for reduced motion and when JavaScript is off.
 - **Interactive canvas background**: click anywhere and a ripple pushes the dot grid outward; idle state costs zero animation frames.
 - **Multilingual scramble cards**: 5-8 phrases at a time, placed to never cover the content, paused while the tab is hidden.
 - **Pointer-tracking button fill** and keyboard-accessible social rail that expands on hover or focus.
 - **Accessible by default**: WCAG 2.2 AA (axe), visible focus, 44 px touch targets, full `prefers-reduced-motion` support, works with JavaScript disabled.
-- **Fast**: ~4.4 KB gzipped JS, self-hosted fonts with preload, LCP 1.4 s / CLS 0.02 on a throttled mobile profile, Lighthouse 100 (a11y, best practices, SEO).
+- **Fast**: ~5.2 KB gzipped JS, self-hosted fonts with preload, LCP under 0.9 s / CLS 0.02 on a throttled mobile profile (150 ms RTT, 1.6 Mbps, 4x CPU), Lighthouse 100 (a11y, best practices, SEO).
 - **Locked down**: strict Content Security Policy (`default-src 'none'`), HSTS, frame and referrer protections, build-time SVG sanitizer, no cookies.
 
 ## Stack
