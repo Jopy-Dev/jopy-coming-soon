@@ -1,0 +1,61 @@
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background-color: var(--color-bg);
+  color: var(--color-fg);
+  font-family: var(--font-mono);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: clip;
+}
+
+/* No-JS dot grid (REQ-016); JS swaps to canvas with identical pitch/offset (REQ-010). */
+html.no-js body {
+  background-image: radial-gradient(circle at center, var(--color-dot) 1px, transparent 1.5px);
+  background-size: var(--dot-pitch) var(--dot-pitch);
+  background-position: calc(var(--dot-offset) - var(--dot-pitch) / 2) calc(var(--dot-offset) - var(--dot-pitch) / 2);
+  background-attachment: fixed;
+}
+
+.dot-field {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-dot-field);
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* REQ-021: single hero, exact center; symmetric padding clears fixed chrome. */
+.hero {
+  position: relative;
+  min-height: 100vh;
+  min-height: 100svh;
+  display: grid;
+  place-items: center;
+  padding: 96px calc(var(--rail-size) + var(--space-edge) + 16px);
+}
+
+@media (max-width: 639.98px) {
+  .hero { padding: 88px calc(var(--rail-size) + var(--space-edge) + 4px); }
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    transition-duration: 0s !important;
+    animation-duration: 0s !important;
+  }
+}

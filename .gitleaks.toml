@@ -1,0 +1,13 @@
+# Extends default ruleset + tight allowlist.
+# Every allowlist entry = verified non-source path; no broad regex masking findings.
+[extend]
+useDefault = true
+
+[allowlist]
+description = "project-local allowlist - keep tight"
+paths = [
+  '''(.*?)(jpg|jpeg|png|gif|webp|woff2?|ttf|otf|eot|ico)$''',
+  '''node_modules/''',
+  '''dist/''',
+  '''\.wrangler/''',
+]

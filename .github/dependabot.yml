@@ -1,0 +1,43 @@
+# npm majors ignored (upgraded deliberately), patch+minor grouped weekly;
+# github-actions all bumps grouped (SHA-pinned). Cooldown matches .npmrc min-release-age.
+# No docker ecosystem: static site, no container.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "09:00"
+      timezone: Asia/Manila
+    open-pull-requests-limit: 5
+    versioning-strategy: increase
+    labels: [dependencies]
+    cooldown:
+      default-days: 7
+      semver-major-days: 21
+      semver-minor-days: 7
+      semver-patch-days: 3
+    groups:
+      npm-patch-minor:
+        applies-to: version-updates
+        update-types: [patch, minor]
+    ignore:
+      - dependency-name: "*"
+        update-types: [version-update:semver-major]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "09:00"
+      timezone: Asia/Manila
+    open-pull-requests-limit: 5
+    labels: [dependencies, ci]
+    cooldown:
+      default-days: 7
+    groups:
+      github-actions:
+        applies-to: version-updates
+        update-types: [patch, minor, major]

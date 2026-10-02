@@ -1,0 +1,2 @@
+# One CVE ID or Trivy AVD ID per line, each followed by a comment with the justification
+# and revisit date. Never blank suppressions.
