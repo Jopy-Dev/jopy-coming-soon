@@ -27,14 +27,30 @@ export function maxResolveMs(length: number): number {
   return Math.max(0, length - 1) * SCRAMBLE.staggerMs + maxCycles * maxStep;
 }
 
-/** Fills `live` with per-char spans that cycle random glyphs, then settle on `text`. */
-export function scrambleInto(live: HTMLElement, text: string, scheduler: Scheduler, reduced: boolean, random: () => number = Math.random): void {
+/** Fills `live` with per-char spans that cycle random glyphs, then settle on `text`; `onDone` fires once all have settled. */
+export function scrambleInto(
+  live: HTMLElement,
+  text: string,
+  scheduler: Scheduler,
+  reduced: boolean,
+  random: () => number = Math.random,
+  onDone: () => void = () => undefined,
+): void {
   live.textContent = "";
   if (reduced) {
     live.textContent = text;
+    onDone();
     return;
   }
-  Array.from(text).forEach((char, index) => {
+  const chars = Array.from(text);
+  let pending = chars.filter(isScrambled).length;
+  if (pending === 0) onDone();
+  const settle = (span: HTMLElement, char: string): void => {
+    span.textContent = char;
+    pending -= 1;
+    if (pending === 0) onDone();
+  };
+  chars.forEach((char, index) => {
     const span = document.createElement("span");
     span.textContent = isScrambled(char) ? randomGlyph(random) : char;
     live.appendChild(span);
@@ -44,7 +60,7 @@ export function scrambleInto(live: HTMLElement, text: string, scheduler: Schedul
     let done = 0;
     const tick = (): void => {
       if (done >= cycles) {
-        span.textContent = char;
+        settle(span, char);
         return;
       }
       span.textContent = randomGlyph(random);

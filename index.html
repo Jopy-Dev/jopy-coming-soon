@@ -16,9 +16,16 @@
     <link rel="icon" href="/favicon.ico" sizes="32x32" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="stylesheet" href="/src/styles/main.css" />
+    <noscript><link rel="stylesheet" href="/noscript.css" /></noscript>
     <script type="module" src="/src/main.ts"></script>
   </head>
   <body>
+    <div class="loader" role="status" aria-label="Loading jopy.dev">
+      <span class="loader__logo" aria-hidden="true"><!-- logo --></span>
+      <span class="loader__text" aria-hidden="true"><span class="loader__text-reserve">loading...</span><span class="loader__text-live"></span></span>
+      <span class="loader__bar" aria-hidden="true"><span class="loader__bar-fill"></span></span>
+    </div>
+
     <canvas class="dot-field" aria-hidden="true"></canvas>
 
     <div class="pill-wrap">

@@ -1,4 +1,4 @@
-import { expect, expectNoSeriousA11yViolations, test } from "./helpers";
+import { expect, expectNoSeriousA11yViolations, gotoRevealed, test } from "./helpers";
 import { routeFor, VIEWPORTS } from "./route-manifest";
 
 const home = routeFor("SCREEN-001");
@@ -15,12 +15,12 @@ test.describe("SCREEN-001 Coming Soon hero", () => {
     expect(h["referrer-policy"]).toBe("strict-origin-when-cross-origin");
     expect(h["strict-transport-security"]).toContain("max-age=31536000");
     expect(h["set-cookie"]).toBeUndefined();
-    await page.goto(home.path);
+    await gotoRevealed(page, home.path);
     expect(await page.context().cookies()).toEqual([]);
   });
 
   test("@critical renders content, metadata, one h1, no countdown, social nav only (REQ-001..003, REQ-019)", async ({ page }) => {
-    await page.goto(home.path);
+    await gotoRevealed(page, home.path);
     await expect(page).toHaveTitle("Jopy — Coming Soon");
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", "https://jopy.dev/");
     await expect(page.locator('meta[name="description"]')).toHaveAttribute("content", "The technology partner built for what's next. Launching soon at jopy.dev.");
@@ -36,7 +36,7 @@ test.describe("SCREEN-001 Coming Soon hero", () => {
   });
 
   test("@critical outbound links: targets, new tab, rel isolation, labels, icons (REQ-004, REQ-006, REQ-007)", async ({ page }) => {
-    await page.goto(home.path);
+    await gotoRevealed(page, home.path);
     const pill = page.locator(".pill");
     await expect(pill).toHaveAttribute("href", "https://portfolio.jopy.dev");
     await expect(pill).toHaveAttribute("target", "_blank");
@@ -63,7 +63,7 @@ test.describe("SCREEN-001 Coming Soon hero", () => {
   for (const vp of VIEWPORTS) {
     test(`exact center, no overflow, touch targets, rail clear at ${vp.name} (REQ-009, REQ-021, REQ-905, REQ-902)`, async ({ page }) => {
       await page.setViewportSize({ width: vp.width, height: vp.height });
-      await page.goto(home.path);
+      await gotoRevealed(page, home.path);
       await page.evaluate(() => document.fonts.ready);
       const m = await page.evaluate(() => {
         const c = document.querySelector(".hero-copy")!.getBoundingClientRect();
@@ -95,7 +95,7 @@ test.describe("SCREEN-001 Coming Soon hero", () => {
 
   test("rail expands leftward on hover and keyboard focus, right edge anchored (REQ-008)", async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 800 });
-    await page.goto(home.path);
+    await gotoRevealed(page, home.path);
     const github = page.locator(".rail a").nth(1);
     const before = await github.boundingBox();
     await github.hover();
@@ -114,7 +114,7 @@ test.describe("SCREEN-001 Coming Soon hero", () => {
 
   test("portfolio flair grows from pointer on hover (REQ-005)", async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 800 });
-    await page.goto(home.path);
+    await gotoRevealed(page, home.path);
     await expect(page.locator("html")).toHaveClass(/has-flair/);
     await page.locator(".pill").hover();
     await page.waitForTimeout(600);
@@ -124,7 +124,7 @@ test.describe("SCREEN-001 Coming Soon hero", () => {
 
   test("click on empty area ripples the dot field, clicks on links do not (REQ-010, REQ-011)", async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 800 });
-    await page.goto(home.path);
+    await gotoRevealed(page, home.path);
     const alpha = () =>
       page.evaluate(() => {
         const c = document.querySelector<HTMLCanvasElement>(".dot-field")!;
@@ -144,7 +144,7 @@ test.describe("SCREEN-001 Coming Soon hero", () => {
 
   test("desktop cards stay within 1..8 and never cover the text block (REQ-012, REQ-014)", async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 800 });
-    await page.goto(home.path);
+    await gotoRevealed(page, home.path);
     await page.waitForTimeout(5000);
     const r = await page.evaluate(() => {
       const copy = document.querySelector(".hero-copy")!.getBoundingClientRect();
@@ -160,7 +160,7 @@ test.describe("SCREEN-001 Coming Soon hero", () => {
 
   test("phone shows at most 4 cards, none clipped (REQ-013)", async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 667 });
-    await page.goto(home.path);
+    await gotoRevealed(page, home.path);
     await page.waitForTimeout(5000);
     const r = await page.evaluate(() => {
       const cards = [...document.querySelectorAll(".card.is-visible")].map((c) => c.getBoundingClientRect());
@@ -171,7 +171,7 @@ test.describe("SCREEN-001 Coming Soon hero", () => {
   });
 
   test("@critical passes axe WCAG 2.2 AA (REQ-902)", async ({ page }) => {
-    await page.goto(home.path);
+    await gotoRevealed(page, home.path);
     await expectNoSeriousA11yViolations(page);
   });
 
@@ -187,6 +187,7 @@ test.describe("SCREEN-001 fallbacks", () => {
   test.use({ javaScriptEnabled: false });
   test("@critical works without JavaScript (REQ-016)", async ({ page }) => {
     await page.goto(home.path);
+    await expect(page.locator(".loader"), "no loading screen without JS (REQ-023)").toBeHidden({ timeout: 100 });
     await expect(page.locator("h1")).toBeVisible();
     await expect(page.locator(".tagline")).toBeVisible();
     await expect(page.locator(".pill")).toBeVisible();
@@ -197,8 +198,10 @@ test.describe("SCREEN-001 fallbacks", () => {
 
 test.describe("SCREEN-001 reduced motion", () => {
   test.use({ reducedMotion: "reduce" });
-  test("no scramble, no ripple, no flair (REQ-015)", async ({ page }) => {
+  test("no scramble, no ripple, no flair, no loading screen (REQ-015, REQ-023)", async ({ page }) => {
     await page.goto(home.path);
+    await expect(page.locator(".loader")).toBeHidden({ timeout: 100 });
+    await expect(page.locator("main")).not.toHaveAttribute("inert");
     await page.waitForTimeout(2500);
     const mismatches = await page.evaluate(() =>
       [...document.querySelectorAll(".card")].filter((c) => c.querySelector(".card__live")?.textContent !== c.querySelector(".card__final")?.textContent).length,

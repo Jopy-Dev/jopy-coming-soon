@@ -148,3 +148,68 @@ html:not(.has-flair) .pill:hover { background-color: var(--color-fg); }
 @media (max-width: 639.98px) {
   .card { font-size: var(--text-card-mobile); }
 }
+
+/* REQ-023 loading screen: visible from first paint; hidden by noscript.css without JS and by reduced motion. */
+html.is-loading { overflow: hidden; }
+
+.loader {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-loader);
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  background-color: var(--color-bg);
+  transition: opacity var(--duration-loader-fade) var(--ease-in);
+  /* Failsafe: never trap the visitor if the script fails to run. */
+  animation: loader-failsafe var(--duration-loader-failsafe) forwards;
+}
+.loader[hidden] { display: none; }
+.loader.is-released { opacity: 0; pointer-events: none; }
+
+@keyframes loader-failsafe {
+  0%, 99% { visibility: visible; }
+  100% { visibility: hidden; }
+}
+
+.loader__logo svg {
+  display: block;
+  width: var(--size-loader-logo);
+  height: var(--size-loader-logo);
+}
+
+.loader__text {
+  position: relative;
+  margin-top: var(--space-loader-logo-text);
+  font-family: var(--font-mono);
+  font-weight: 400;
+  font-size: var(--text-card);
+  line-height: 1;
+  letter-spacing: -0.01em;
+  color: var(--color-fg-card);
+  white-space: nowrap;
+}
+.loader__text-reserve { visibility: hidden; }
+.loader__text-live { position: absolute; inset: 0; overflow: hidden; text-align: center; }
+
+.loader__bar {
+  display: block;
+  width: var(--size-loader-bar-w);
+  height: var(--size-loader-bar-h);
+  margin-top: var(--space-loader-text-bar);
+  overflow: hidden;
+  border-radius: var(--radius-pill);
+  background-color: var(--color-hairline-strong);
+}
+.loader__bar-fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background-color: var(--color-fg);
+  transform: scaleX(0);
+  transform-origin: left center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loader { display: none; }
+}

@@ -1,0 +1,3 @@
+/* Loaded only inside <noscript>: the loading screen needs script to run, so never show it (REQ-016, REQ-023).
+   !important: the build injects the main stylesheet after this link, so source order cannot be relied on. */
+.loader { display: none !important; }

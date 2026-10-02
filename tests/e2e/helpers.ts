@@ -62,3 +62,12 @@ export async function expectNoSeriousA11yViolations(page: Page): Promise<void> {
   const blocking = results.violations.filter((v) => v.impact === "serious" || v.impact === "critical");
   expect(blocking.map((v) => `${v.id}: ${v.help}`)).toEqual([]);
 }
+
+/** Max wait for the REQ-023 loading screen to reveal the hero (sequence ≈ 3.6s, script cap 5s). */
+export const REVEAL_TIMEOUT_MS = 8000;
+
+/** Navigates and waits until the loading screen is gone, so tests interact with the revealed hero. */
+export async function gotoRevealed(page: Page, path: string): Promise<void> {
+  await page.goto(path);
+  await expect(page.locator(".loader")).toBeHidden({ timeout: REVEAL_TIMEOUT_MS });
+}

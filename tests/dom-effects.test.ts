@@ -223,3 +223,28 @@ describe("REQ-012..014 mountCardSwarm", () => {
     expect(cards(container).length).toBe(0);
   });
 });
+
+describe("REQ-023 scrambleInto completion", () => {
+  it("calls onDone once, exactly when the final text has settled", async () => {
+    const live = document.createElement("span");
+    const onDone = vi.fn();
+    const scheduler = new Scheduler();
+    scrambleInto(live, "ab.", scheduler, false, () => 0, onDone);
+    let settledAt = -1;
+    for (let t = 1; t <= maxResolveMs(3) + 5; t++) {
+      await vi.advanceTimersByTimeAsync(1);
+      if (settledAt < 0 && live.textContent === "ab.") settledAt = t;
+      if (onDone.mock.calls.length && settledAt < 0) throw new Error("onDone before text settled");
+    }
+    expect(settledAt).toBeGreaterThan(0);
+    expect(onDone).toHaveBeenCalledTimes(1);
+  });
+
+  it("calls onDone immediately when reduced motion renders final text", () => {
+    const live = document.createElement("span");
+    const onDone = vi.fn();
+    scrambleInto(live, "welcome", new Scheduler(), true, Math.random, onDone);
+    expect(live.textContent).toBe("welcome");
+    expect(onDone).toHaveBeenCalledTimes(1);
+  });
+});
